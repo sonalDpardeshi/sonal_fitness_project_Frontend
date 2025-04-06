@@ -1,9 +1,11 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap
 import "./style.css"; // Import additional styles
+import WorkoutSlider from './WorkoutSlider';
 
 function Home() {
-  return (
+  return (<>
+    <WorkoutSlider/>
     <div className="container-fluid home-container d-flex align-items-center justify-content-center">
       <div className="text-center">
         {/* Title with Bootstrap Styling */}
@@ -20,6 +22,7 @@ function Home() {
         </p>
       </div>
     </div>
+    </>
   );
 }
 

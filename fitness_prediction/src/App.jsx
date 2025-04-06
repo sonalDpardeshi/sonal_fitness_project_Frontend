@@ -10,10 +10,12 @@ function App() {
   const [userRole, setUserRole] = useState("user"); // "admin" or "user"
 
   return (
+  <>
+   
     <BrowserRouter>
       <Navbar userRole={userRole} />
       <Routes>
-        <Route path="/home" element={<Home/>} />
+        <Route path="/" element={<Home/>}></Route>
         <Route path="/predictions/calories" element={<h1>Calories Burned</h1>} />
         <Route path="/predictions/workout-plan" element={<h1>Workout Plan</h1>} />
         <Route path="/history" element={<h1>History</h1>} />
@@ -25,6 +27,8 @@ function App() {
         <Route path="/user-history" element={<h1>User History</h1>} />
       </Routes>
     </BrowserRouter>
+   
+    </>
   );
 }
 

@@ -28,7 +28,7 @@ const Navbar = ({ userRole }) => {
           <ul className="navbar-nav ms-auto">
             {/* Home */}
             <li className="nav-item">
-              <NavLink className="nav-link text-light" to="/home">Home</NavLink>
+              <NavLink className="nav-link text-light" to="/">Home</NavLink>
             </li>
 
             {/* Workouts Dropdown (Dynamic List) */}
