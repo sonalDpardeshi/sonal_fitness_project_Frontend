@@ -74,8 +74,8 @@ const WorkoutSlider = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center mb-4">Workout Gallery</h2>
+    <div className="container mt-2">
+      <h2 className="text-center mb-4">Workouts Gallery</h2>
       <Slider {...settings}>
         <div>
           <img

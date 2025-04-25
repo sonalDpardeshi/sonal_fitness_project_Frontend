@@ -1,103 +1,119 @@
-import React, { useState, useEffect } from "react";
+import React,{useState,useRef,useEffect} from "react";
 import { NavLink } from "react-router-dom";
-import Workouts from "./Workouts"; // Import Workouts Component
+import "./style.css";
+import logo from "../assets/logoicon.jpg"
 
-const Navbar = ({ userRole }) => {
-  const [workouts, setWorkouts] = useState([]);
+const Navbar = () => {
 
-  // Load workouts from Workouts Component
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showSubmenu, setShowSubmenu] = useState(false);
+  const dropdownRef = useRef();
+
+  // Close dropdown when clicking outside
   useEffect(() => {
-    setWorkouts(Workouts()); // Assuming Workouts.jsx returns an array
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+        setShowSubmenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+    <nav className="navbar custom-navbar navbar-expand-lg navbar-dark bg-dark px-3">
+      
       <div className="container-fluid">
-        {/* Brand */}
-        <NavLink className="navbar-brand fw-bold text-light" to="/home">
-          Fitness Tracker
+        <img src={logo} alt="logo image" className="logoimg" />
+        <NavLink className="navbar-brand fw-bold" to="/">
+          Plan<span className="title">2</span>Fit
         </NavLink>
 
-        {/* Toggle Button for Mobile */}
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Navbar Links */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
+
             {/* Home */}
             <li className="nav-item">
-              <NavLink className="nav-link text-light" to="/">Home</NavLink>
+              <NavLink className="nav-link" to="/">Home</NavLink>
             </li>
 
-            {/* Workouts Dropdown (Dynamic List) */}
-            <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
-                Workouts
-              </a>
-              <ul className="dropdown-menu">
-                {workouts.length > 0 ? (
-                  workouts.map((workout, index) => (
-                    <li key={index}>
-                      <NavLink className="dropdown-item" to={`/workout/${workout.toLowerCase()}`}>
-                        {workout}
-                      </NavLink>
-                    </li>
-                  ))
-                ) : (
-                  <li className="dropdown-item text-muted">No workouts available</li>
-                )}
-              </ul>
+            {/* Workouts */}
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/workouts">Workouts</NavLink>
             </li>
-
-            {/* Predictions Dropdown (Only for User) */}
-            {userRole === "user" && (
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
-                  Predictions
-                </a>
-                <ul className="dropdown-menu">
-                  <li><NavLink className="dropdown-item" to="/predictions/calories">Calories Burned</NavLink></li>
-                  <li><NavLink className="dropdown-item" to="/predictions/workout-plan">Workout Plan</NavLink></li>
-                </ul>
-              </li>
-            )}
-
-            {/* History (Only for User) */}
-            {userRole === "user" && (
-              <li className="nav-item">
-                <NavLink className="nav-link text-light" to="/history">History</NavLink>
-              </li>
-            )}
 
             {/* Account Dropdown */}
-            <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
-                Account
-              </a>
-              <ul className="dropdown-menu">
-                <li><NavLink className="dropdown-item" to="/account/admin">Admin</NavLink></li>
-                <li><NavLink className="dropdown-item" to="/account/user">User</NavLink></li>
-              </ul>
-            </li>
+            <li className="nav-item dropdown" ref={dropdownRef}>
+                  <a
+                    className="nav-link dropdown-toggle text-light"
+                    href="#"
+                    role="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowDropdown(!showDropdown);
+                      setShowSubmenu(false); // Reset submenu when reopening
+                    }}
+                  >
+                    Account
+                  </a>
 
-            {/* Admin Specific Options */}
-            {userRole === "admin" && (
-              <>
-                <li className="nav-item">
-                 <NavLink className="nav-link text-light" to="/users">Users</NavLink>
+                  {showDropdown && (
+                    <ul className="dropdown-menu bg-dark show" style={{ display: "block" }}>
+                      <li>
+                        <NavLink className="dropdown-item text-light" to="/account/admin">
+                          Admin
+                        </NavLink>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item text-light"
+                          onClick={() => setShowSubmenu(!showSubmenu)}
+                        >
+                          User
+                        </button>
+                      </li>
+
+                      {showSubmenu && (
+                        <>
+                          <li>
+                            <NavLink
+                              className="dropdown-item text-light ps-4"
+                              to="/account/user/login"
+                            >
+                              User Login
+                            </NavLink>
+                          </li>
+                          <li>
+                            <NavLink
+                              className="dropdown-item text-light ps-4"
+                              to="/account/user/register"
+                            >
+                              User Register
+                            </NavLink>
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                  )}
                 </li>
-                <li className="nav-item">
-                  <NavLink className="nav-link text-light" to="/user-history">User History</NavLink>
-                </li>
-              </>
-            )}
           </ul>
         </div>
       </div>
     </nav>
   );
 };
- 
+
 export default Navbar;

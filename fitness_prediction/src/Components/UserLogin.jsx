@@ -1,81 +1,70 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from 'react';
+import UserService from '../Services/UserService';
+import { useNavigate } from 'react-router-dom';
 
 function UserLogin() {
-  const [user, setUser] = useState({ username: "", password: "" });
-  const [error, setError] = useState("");
-  const navigate = useNavigate(); // For navigation
+  const [user, setUser] = useState({ email: "", password: "" });
+  const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
 
-  // Handle Input Change
+  // Handle input changes
   const handleChange = (e) => {
-    setAdmin({ ...user, [e.target.name]: e.target.value });
+    setUser(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Handle Form Submission
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    if (user.username === "" || user.password === "") {
-      setError("Both fields are required!");
-      return;
-    }
+    // Call login service
+    UserService.login(user)
+      .then((res) => {
+        setMsg(res.data.msg); // success message
 
-    if (user.username !== "user" || user.password !== "user123") {
-      setError("Invalid username or password!");
-      return;
-    }
+        // This happens after the user successfully logs in
+if (res.data.userid) {
+  localStorage.setItem("userid", res.data.userid);//Store the userid
+  localStorage.setItem("username", res.data.username);  // Store the username (or email)
+  localStorage.setItem("name",res.data.name);//stores name of user
+}
 
-    setError(""); // Clear error
-    alert("Login Successful! Redirecting to Admin Dashboard");
-    navigate("/user-dashboard"); // Redirect to Dashboard
+
+        // You can  navigate to user dashboard 
+        navigate("/account/user/UserDashboard",{state:{"name":res.data.name}});
+      })
+      .catch((err) => {
+        setMsg(err.response?.data || "Login failed");
+      });
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100" 
+    <div className="container d-flex justify-content-center align-items-center vh-100"
          style={{ backgroundColor: "#f8f8f8" }}>
-      <div className="card p-5 shadow-lg border-0" 
+      <div className="card p-5 shadow-lg border-0"
            style={{ width: "500px", borderRadius: "10px", backgroundColor: "white" }}>
-        <h2 className="text-center fw-bold mb-2" style={{ color: "#333" }}>User Login</h2>
-        
-        {/* Error Message */}
-        {error && <div className="alert alert-danger text-center">{error}</div>}
+        <h2 className="text-center fw-bold mb-3" style={{ color: "#333" }}>User Login</h2>
 
-        <form onSubmit={handleSubmit}>
+        {/* Show error/success message */}
+        {msg && (
+          <div className="alert alert-info text-center">{msg}</div>
+        )}
+
+        <form onSubmit={handleLogin}>
           {/* Username Field */}
-          <div className="mb-2">
+          <div className="mb-3">
             <label className="form-label fw-bold">Username</label>
-            <input
-              type="text"
-              className="form-control p-3 rounded-2"
-              name="username"
-              value={user.username}
-              onChange={handleChange}
-              placeholder="Enter user username"
-              required
-            />
+            <input  type="text" className="form-control p-3 rounded-2" name="email"  value={user.email} onChange={handleChange}  placeholder="Enter user username"  required  />
           </div>
 
           {/* Password Field */}
-          <div className="mb-2">
+          <div className="mb-3">
             <label className="form-label fw-bold">Password</label>
-            <input
-              type="password"
-              className="form-control p-3 rounded-2"
-              name="password"
-              value={user.password}
-              onChange={handleChange}
-              placeholder="Enter user password"
-              required
-            />
+            <input  type="password"  className="form-control p-3 rounded-2"  name="password"  value={user.password}  onChange={handleChange}  placeholder="Enter user password"  required/>
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn w-100 p-3 fw-bold" 
-            style={{ borderRadius: "8px", backgroundColor: "#333", color: "white", transition: "0.3s" }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#333")}
-          >
+          <button  type="submit" className="btn w-100 p-3 fw-bold" style={{ borderRadius: "8px", backgroundColor: "#333", color: "white", transition: "0.3s" }} onMouseOver={(e) => (e.target.style.backgroundColor = "#555")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#333")} >
             Login
           </button>
         </form>
